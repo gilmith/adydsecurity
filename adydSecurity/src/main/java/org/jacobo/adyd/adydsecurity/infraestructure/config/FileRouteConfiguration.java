@@ -1,8 +1,9 @@
-package org.jacobo.adyd.adydsecurity;
+package org.jacobo.adyd.adydsecurity.infraestructure.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.jacobo.adyd.adydsecurity.domain.entity.SecurityRule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
