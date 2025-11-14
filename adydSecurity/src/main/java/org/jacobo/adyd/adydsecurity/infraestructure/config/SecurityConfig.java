@@ -3,13 +3,16 @@ package org.jacobo.adyd.adydsecurity.infraestructure.config;
 import lombok.RequiredArgsConstructor;
 import org.jacobo.adyd.adydsecurity.domain.entity.SecurityRule;
 import org.jacobo.adyd.adydsecurity.domain.service.AuthServicePort;
+import org.jacobo.adyd.adydsecurity.infraestructure.filter.KeycloakTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,41 +42,28 @@ public class SecurityConfig {
         );
 
         // 4. Configurar la autorización (ahora usa el SecurityContext establecido por tu filtro)
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**").permitAll()
-                .anyRequest().authenticated()
+        http.authorizeHttpRequests(auth -> {
+                    securityRoutes.forEach(securityRule -> {
+                        if (securityRule.authenticated()) {
+                            auth.requestMatchers(securityRule.method(), securityRule.path()).authenticated();
+                        } else {
+                            auth.requestMatchers(securityRule.method(), securityRule.path()).permitAll();
+                        }
+                    });
+                    auth.anyRequest().denyAll();
+                }
         );
+
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(Arrays.asList("*"));
+            configuration.setAllowedMethods(Arrays.asList("*"));
+            configuration.setAllowedHeaders(Arrays.asList("*"));
+            return configuration;
+        }));
 
         return http.build();
 
-//        http.sessionManagement(new Customizer<SessionManagementConfigurer<HttpSecurity>>() {
-//            @Override
-//            public void customize(SessionManagementConfigurer<HttpSecurity> session) {
-//                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//            }
-//        });
-//        http.cors(cors -> cors.configurationSource(request -> {
-//            CorsConfiguration configuration = new CorsConfiguration();
-//            configuration.setAllowedOrigins(Arrays.asList("*"));
-//            configuration.setAllowedMethods(Arrays.asList("*"));
-//            configuration.setAllowedHeaders(Arrays.asList("*"));
-//            return configuration;
-//        }));
-//        http.csrf(AbstractHttpConfigurer::disable);
-//        http.authorizeHttpRequests(
-//                (authorizeHttpRequests) -> {
-//                    securityRoutes.forEach(rule -> {
-//                        if (rule.authenticated()) {
-//                            authorizeHttpRequests.requestMatchers(rule.method(), rule.path()).authenticated();
-//                        } else {
-//                            authorizeHttpRequests.requestMatchers(rule.method(), rule.path()).permitAll();
-//                        }
-//                    });
-//                    authorizeHttpRequests.anyRequest().authenticated();
-//                }
-//        );
-//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
 
     }
 

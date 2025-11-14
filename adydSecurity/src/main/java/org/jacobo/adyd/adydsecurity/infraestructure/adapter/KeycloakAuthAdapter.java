@@ -25,5 +25,10 @@ public class KeycloakAuthAdapter implements AuthServicePort {
         List<String> roles = extractRoles(jwt); // Lógica para extraer roles del claim "realm_access" o "resource_access"
 
         // 3. Devolver el objeto de Dominio
-        return new UserIdentity(userId, roles);    }
+        return new UserIdentity(userId, roles);
+    }
+
+    private List<String> extractRoles(Jwt jwt) {
+        return List.of();
+    }
 }
