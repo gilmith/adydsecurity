@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.jacobo.adyd</groupId>
     <artifactId>adydsecurity</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <name>adydsecurity</name>
     <description>adydsecurity</description>
     <url/>
